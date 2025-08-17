@@ -3,6 +3,7 @@
     "pages/Index",
     "pages/statev1/propV1",
     "pages/customcomponent/customComponent",
-    "pages/customcomponent/componentExtend"
+    "pages/customcomponent/componentExtend",
+    "pages/PageTaskList"
   ]
 }

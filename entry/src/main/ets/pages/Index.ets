@@ -55,6 +55,13 @@ struct Index {
             this.getUIContext().getRouter().pushUrl({url: 'pages/customcomponent/componentExtend'})
           })
           .width(200)
+
+        Button('todolist')
+          .onClick(()=>{
+            this.getUIContext().getRouter().pushUrl({url: 'pages/PageTaskList'})
+          })
+          .width(200)
+
       }.width('100%')
       .alignItems(HorizontalAlign.Center)
       /*Column({space:10}){
