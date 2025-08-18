@@ -13,12 +13,19 @@
     "abilities": [
       {
         "name": "EntryAbility",
+        //UIAbility组件名称
         "srcEntry": "./ets/entryability/EntryAbility.ets",
+        //UIAbility组件代码的路径
         "description": "$string:EntryAbility_desc",
+        //描述信息
         "icon": "$media:layered_image",
+        //组件图标
         "label": "$string:EntryAbility_label",
+        //UIAbility组件标签
         "startWindowIcon": "$media:startIcon",
+        // UIAbility组件启动页面图标资源文件的索引
         "startWindowBackground": "$color:start_window_background",
+        // UIAbility组件启动页面背景颜色资源文件的索引
         "exported": true,
         "skills": [
           {
@@ -30,6 +37,15 @@
             ]
           }
         ]
+      },
+      {
+        "name": "FoodMainAbility",
+        "srcEntry": "./ets/foodmainability/FoodMainAbility.ets",
+        "description": "$string:FoodMainAbility_desc",
+        "icon": "$media:layered_image",
+        "label": "$string:FoodMainAbility_label",
+        "startWindowIcon": "$media:startIcon",
+        "startWindowBackground": "$color:start_window_background"
       }
     ],
     "extensionAbilities": [

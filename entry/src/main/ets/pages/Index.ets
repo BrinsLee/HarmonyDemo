@@ -1,4 +1,5 @@
 import { url } from '@kit.ArkTS';
+import { common, Want } from '@kit.AbilityKit';
 
 @Entry
 @Component
@@ -62,18 +63,25 @@ struct Index {
           })
           .width(200)
 
+        Button('启动页面Singleton')
+          .onClick(()=>{
+            let context: common.UIAbilityContext =
+              this.getUIContext().getHostContext() as common.UIAbilityContext;
+            let want: Want = {
+              bundleName: 'com.example.myapplication',
+              abilityName: 'SingletonAbility',
+              parameters: {
+                name: 'Singleton'
+              }
+            }
+
+            context.startAbility(want, (err) => {})
+          })
+          .width(200)
+
       }.width('100%')
       .alignItems(HorizontalAlign.Center)
-      /*Column({space:10}){
-        TextInput({
-          placeholder: "请输入用户名"
-        })
-        TextInput({
-          placeholder: "请输入密码"
-        }).type(InputType.NUMBER_PASSWORD)
 
-        Button('登录').width(200)
-      }*/
     }
     .height('100%')
     .width('100%')

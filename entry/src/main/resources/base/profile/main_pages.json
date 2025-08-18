@@ -1,6 +1,7 @@
 {
   "src": [
     "pages/Index",
+    "pages/Single",
     "pages/statev1/propV1",
     "pages/customcomponent/customComponent",
     "pages/customcomponent/componentExtend",
