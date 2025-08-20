@@ -1,0 +1,488 @@
+import { Want } from '@kit.AbilityKit';
+import Constants from '../common/Constants';
+import { CategoryId, FoodInfo } from '../model/DataModels';
+import { getFoodsData } from '../model/DataUtil';
+import { getContextData, startMode, totast } from '../utils/Util';
+import { emitter } from '@kit.BasicServicesKit';
+import Logger from '../utils/Logger';
+
+/**
+ * @author lipeilin
+ * @date 2025/8/19
+ * @project demo
+ * @description 描述信息
+ */
+const TAG = '[Sample_StartMode]';
+// Set an ID for emitter transmission.
+const eventId = Constants.DEFAULT_ONE;
+let abilityWant: Want = getContextData();
+
+interface EventHub {
+  emit(event: string, ...args: Object[]): void;
+}
+
+interface GetFoodItemId {
+  eventHub: EventHub;
+}
+
+interface InnerEvent {
+  eventId: number;
+}
+
+interface EventData {
+  'foodItemId': number;
+}
+
+interface Event {
+  data: EventData;
+}
+
+@Styles
+function cardStyle() {
+  .height(Constants.FULL_PERCENT)
+  .padding({
+    top: $r('app.integer.padding_normal'),
+    right: $r('app.integer.padding_normal'),
+    left: $r('app.integer.padding_normal')
+  })
+  .backgroundColor($r('app.color.white'))
+  .borderRadius(Constants.BORDER_RADIUS_NORMAL_DOUBLE)
+}
+
+
+@Component
+struct CardTitle {
+  private title: Resource = {
+    bundleName: '',
+    moduleName: '',
+    id: Constants.DEFAULT_ZERO
+  };
+  private subtitle: Resource = {
+    bundleName: '',
+    moduleName: '',
+    id: Constants.DEFAULT_ZERO
+  };
+
+  build() {
+    Row() {
+      Text(this.title)
+        .fontSize($r('app.integer.font_size_normal_md'))
+      Blank()
+      Text(this.subtitle)
+        .fontSize($r('app.integer.font_size_normal_sm'))
+        .fontColor($r('app.color.font_color_sp1'))
+    }
+    .width(Constants.FULL_PERCENT)
+    .height($r('app.integer.height_normal_sm'))
+  }
+}
+
+
+@Component
+struct PageTitle {
+  private foodName: Resource = $r('app.string.title_food_detail');
+
+  build() {
+    Row() {
+      Image($r('app.media.back'))
+        .width($r('app.integer.width_normal_sm1'))
+        .height($r('app.integer.height_normal_sm1'))
+      Text(this.foodName)
+        .fontSize($r('app.integer.font_size_normal_md1'))
+        .margin({ left: $r('app.integer.margin_normal_md1') })
+    }
+    .padding($r('app.integer.padding_normal_sm'))
+    .width(Constants.FULL_PERCENT)
+    .onClick(() => {
+      startMode({}, 'FoodMainAbility');
+    })
+  }
+}
+
+
+@Entry
+@Component
+struct FoodDetail {
+  @State foodInfo: FoodInfo = new FoodInfo();
+  @State MultitonFoodData: FoodInfo[] = [];
+  @State specifiedFoodData: FoodInfo[] = [];
+  @State singletonFoodData: FoodInfo[] = [];
+
+  // Accept the foodItemId sent by want and filter the data based on this Id, with an initial value of 0.
+  @State foodItemId: number = Constants.DEFAULT_ZERO;
+  private foodData: Array<FoodInfo>[] = getFoodsData();
+  private modeName: string | undefined = '';
+  private foodListIndex: number = Constants.DEFAULT_ZERO;
+
+  async aboutToAppear() {
+    this.foodItemId = Number(abilityWant.parameters?.foodItemId);
+    this.modeName = abilityWant.parameters?.modeName.toString();
+    this.foodListIndex = Number(abilityWant.parameters?.foodListIndex);
+    this.foodInfo = this.foodData[this.foodListIndex].filter(item => {
+      return this.foodItemId == item.id;
+    })[Constants.DEFAULT_ZERO];
+    if (this.modeName === 'multiton') {
+      // Determine if the ID value of the data is 0.
+      if (this.foodItemId == Constants.DEFAULT_ZERO) {
+        // Here, 1 is used to search for data with ID 1.
+        this.foodItemId = Constants.DEFAULT_ONE;
+        this.MultitonFoodData = [this.foodData[this.foodListIndex][this.foodItemId]];
+      } else {
+        // Here, 0 is used to search for data with ID 0.
+        this.foodItemId = Constants.DEFAULT_ZERO;
+        this.MultitonFoodData = [this.foodData[this.foodListIndex][this.foodItemId]];
+      }
+    } else if (this.modeName == 'specified') {
+      this.specifiedFoodData = this.foodData[this.foodListIndex];
+    } else {
+      if (this.foodItemId == Constants.DEFAULT_ZERO) {
+        this.foodItemId = Constants.DEFAULT_ONE;
+        this.singletonFoodData = [this.foodData[this.foodListIndex][this.foodItemId]];
+      } else {
+        this.foodItemId = Constants.DEFAULT_ZERO;
+        this.singletonFoodData = [this.foodData[this.foodListIndex][this.foodItemId]];
+      }
+    }
+  }
+
+  build() {
+    Scroll(){
+      Column(){
+        PageTitle()
+        // @Link 属于引用传递，必须使用$传递引用
+        FoodImageDisplay({foodInfo: $foodInfo})
+        Swiper() {
+          ContentTable({ foodInfo: $foodInfo })
+          CaloriesProgress({ foodInfo: $foodInfo })
+        }
+        .clipShape(new Rect()
+          .width(Constants.FULL_PERCENT)
+          .height(Constants.FULL_PERCENT)
+          .radiusWidth(Constants.SPACE_FIFTEEN)
+          .radiusHeight(Constants.SPACE_FIFTEEN)
+        )
+        .itemSpace(Constants.SPACE_TWENTY)
+        .height($r('app.integer.height_normal_lg2'))
+        .margin({
+          top: $r('app.integer.margin_normal_sm2'),
+          right: $r('app.integer.margin_normal_sm2'),
+          left: $r('app.integer.margin_normal_sm2')
+        })
+        if (this.modeName === 'multiton') {
+          StartModeCard({
+            foodData: $MultitonFoodData,
+            modeName: this.modeName,
+            foodItemId: $foodItemId,
+            foodInfo: $foodInfo,
+            foodListIndex: this.foodListIndex
+          })
+        } else if (this.modeName === 'specified') {
+          StartModeCard({
+            foodData: $specifiedFoodData,
+            modeName: this.modeName,
+            foodItemId: $foodItemId,
+            foodInfo: $foodInfo,
+            foodListIndex: this.foodListIndex
+          })
+        } else {
+          StartModeCard({
+            foodData: $singletonFoodData,
+            modeName: this.modeName,
+            foodItemId: $foodItemId,
+            foodInfo: $foodInfo,
+            foodListIndex: this.foodListIndex
+          })
+        }
+        
+      }.alignItems(HorizontalAlign.Center)
+    }
+    .backgroundColor($r('app.color.back_ground_color_sp1'))
+    .height(Constants.FULL_PERCENT)
+    .align(Alignment.Top)
+    .id('detailPage')
+  }
+}
+
+
+@Component
+struct StartModeCard {
+  @Link foodData: FoodInfo[];
+  @Link foodItemId: number;
+  @Link foodInfo: FoodInfo;
+  private modeName: string = '';
+  private foodListIndex: number = Constants.DEFAULT_ZERO;
+
+  aboutToAppear(): void {
+    this.emitterOn();
+  }
+
+  emitterOn(){
+    let innerEvent: InnerEvent = { eventId };
+    emitter.on(innerEvent, (eventData: emitter.EventData) => {
+      this.foodItemId = eventData.data?.foodItemId;
+      // Determine if the ID value of the data is 0.
+      if (this.foodItemId == Constants.DEFAULT_ZERO) {
+        this.foodInfo = getFoodsData()[this.foodListIndex][this.foodItemId + Constants.DEFAULT_ONE];
+        this.foodData = [getFoodsData()[this.foodListIndex][this.foodItemId]];
+      } else {
+        this.foodInfo = getFoodsData()[this.foodListIndex][this.foodItemId - Constants.DEFAULT_ONE];
+        this.foodData = [getFoodsData()[this.foodListIndex][this.foodItemId]];
+      }
+    });
+  }
+
+  async cateMode(foodItemId: number) {
+    Logger.info(TAG, 'MultitonAbility startMode start')
+    if (this.modeName == 'multiton') {
+      startMode({
+        'foodItemId': foodItemId,
+        'modeName': this.modeName,
+        'foodListIndex': this.foodListIndex
+      }, 'MultitonAbility')
+    } else if (this.modeName == 'specified') {
+      if (this.foodItemId == foodItemId) {
+        return;
+      }
+      startMode({
+        'target': 'pages/FoodDetail',
+        'foodItemId': foodItemId,
+        'modeName': this.modeName,
+        'foodListIndex': this.foodListIndex
+      }, 'SpecifiedAbility')
+    } else {
+      startMode({
+        'foodItemId': foodItemId,
+        'modeName': this.modeName,
+        'foodListIndex': this.foodListIndex
+      }, 'SingletonAbility')
+      this.emitterOn();
+    }
+  }
+
+  build() {
+    Column() {
+      Text($r('app.string.otherFoods'))
+        .width(Constants.FULL_PERCENT)
+        .height($r('app.integer.height_normal1'))
+        .fontSize($r('app.integer.font_size_normal_sm1'))
+        .fontWeight(Constants.FONT_WEIGHT_MD)
+        .fontColor($r('app.color.font_color_normal1'))
+      Grid() {
+        ForEach(this.foodData, (item: FoodInfo) => {
+          GridItem() {
+            Row() {
+              Image(item.image)
+                .objectFit(ImageFit.Contain)
+                .autoResize(false)
+                .height($r('app.integer.height_normal'))
+                .width($r('app.integer.width_normal'))
+                .backgroundColor($r('app.color.back_ground_color'))
+                .margin({ right: $r('app.integer.margin_normal') })
+                .borderRadius(Constants.BORDER_RADIUS_NORMAL)
+              Row() {
+                Text(item.name)
+                  .fontSize($r('app.integer.font_size_normal'))
+                  .fontWeight(Constants.FONT_WEIGHT_MD)
+              }.width(Constants.EIGHTY_PERCENT)
+            }
+            .width(Constants.FULL_PERCENT)
+            .height($r('app.integer.height_normal_md'))
+            .padding({
+              left: $r('app.integer.padding_normal_sm1'),
+              right: $r('app.integer.padding_normal')
+            })
+            .onClick(() => {
+              this.cateMode(item.id)
+            })
+          }
+        })
+      }
+      .columnsTemplate(Constants.COLUMNS_TEMPLATE_ONE)
+      .columnsGap(Constants.SPACE_TEN)
+      .rowsGap(Constants.SPACE_TEN)
+    }
+    .backgroundColor($r('app.color.white'))
+    .borderRadius(Constants.BORDER_RADIUS_NORMAL_DOUBLE)
+    .height($r('app.integer.height_normal_lg1'))
+    .padding({
+      left: $r('app.integer.padding_normal_sm2'),
+      bottom: $r('app.integer.padding_normal_sm2')
+    })
+    .margin({
+      top: $r('app.integer.margin_normal_md1'),
+      right: $r('app.integer.margin_normal_sm2'),
+      left: $r('app.integer.margin_normal_md1')
+    })
+  }
+}
+
+
+@Component
+struct FoodImageDisplay {
+  @State imageBgColorAlpha: number = Constants.DEFAULT_ZERO;
+  @Link foodInfo: FoodInfo;
+
+  build() {
+    Stack({alignContent: Alignment.BottomStart}) {
+      Image(this.foodInfo.image)
+        .sharedTransition(this.foodInfo.letter, {
+          duration: Constants.EFFECT_DURATION_FOUR,
+          delay: Constants.ANIMATION_DELAY_ONE,
+        })
+        .backgroundColor(`rgba(255, 255, 255, ${this.imageBgColorAlpha})`)
+        .objectFit(ImageFit.Contain)
+      Row() {
+        Text(this.foodInfo.name)
+          .fontSize($r('app.integer.font_size_normal_md'))
+          .fontWeight(FontWeight.Bold)
+          .margin({
+            left: $r('app.integer.margin_normal_md2'),
+            right: $r('app.integer.margin_normal_sm')
+          })
+      }
+    }.height($r('app.integer.height_normal_lg'))
+  }
+}
+
+
+@Component
+struct ContentTable {
+  @Link foodInfo: FoodInfo;
+  private IngredientTitle1: Resource = { bundleName: '', moduleName: '', id: 1 };
+  private IngredientTitle2: Resource = { bundleName: '', moduleName: '', id: 2 };
+  private IngredientTitle3: Resource = { bundleName: '', moduleName: '', id: 3 };
+
+  @Builder
+  IngredientItem(title: Resource, colorValue: string | ResourceStr, name: Resource, value: Resource) {
+    Row() {
+      Text(title)
+        .fontSize($r('app.integer.font_size_normal'))
+        .fontWeight(FontWeight.Bold)
+        .layoutWeight(Constants.DEFAULT_ONE)
+        .align(Alignment.Start)
+      Row() {
+        Circle({
+          width: Constants.CIRCLE_WIDTH_NORMAL,
+          height: Constants.CIRCLE_HEIGHT_NORMAL
+        })
+          .margin({ right: $r('app.integer.margin_normal_sm1') })
+          .fill(colorValue)
+        Text(name)
+          .fontSize($r('app.integer.font_size_normal'))
+        Blank()
+        Text(value)
+          .fontSize($r('app.integer.font_size_normal'))
+      }
+      .width(Constants.FULL_PERCENT)
+      .layoutWeight(Constants.CARD_LIST_SPACE)
+    }
+    .margin({ bottom: $r('app.integer.margin_normal_md1') })
+    .id('ContentTable')
+  }
+
+  build() {
+    Column() {
+      this.IngredientItem(
+        $r('app.string.diet_record_calorie'),
+        $r('app.color.ingredient_item_color3'),
+        $r('app.string.diet_record_calorie'),
+        $r('app.string.calorie_with_kcal_unit', this.foodInfo.calories.toString())
+      )
+      Row()
+        .height($r('app.integer.height_normal_sm1'))
+      this.IngredientItem(
+        $r('app.string.nutrition_element'),
+        $r('app.color.ingredient_item_color4'),
+        $r('app.string.nutrition_element'),
+        $r('app.string.weight_with_gram_unit', this.foodInfo.protein.toString())
+      )
+      this.IngredientItem(
+        this.IngredientTitle1,
+        $r('app.color.ingredient_item_color1'),
+        $r('app.string.diet_record_fat'),
+        $r('app.string.weight_with_gram_unit', this.foodInfo.fat.toString())
+      )
+      this.IngredientItem(
+        this.IngredientTitle2,
+        $r('app.color.ingredient_item_color2'),
+        $r('app.string.diet_record_carbohydrates'),
+        $r('app.string.weight_with_gram_unit', this.foodInfo.carbohydrates.toString())
+      )
+      this.IngredientItem(
+        this.IngredientTitle3,
+        $r('app.color.ingredient_item_color3'),
+        $r('app.string.diet_record_vitaminC'),
+        $r('app.string.weight_with_milligram_unit', this.foodInfo.vitaminC.toString())
+      )
+    }.cardStyle()
+  }
+
+}
+
+@Component
+struct CaloriesProgress {
+  @Link foodInfo: FoodInfo
+  private averageCalories: number = Constants.DEFAULT_ZERO;
+  private totalCalories: number = Constants.DEFAULT_ZERO;
+  private highCalories: boolean = false;
+
+  aboutToAppear() {
+    switch (this.foodInfo.categoryId) {
+      case CategoryId.Vegetable:
+        this.averageCalories = Constants.AVERAGE_CALORIES_ONE;
+        break
+      case CategoryId.Fruit:
+        this.averageCalories = Constants.AVERAGE_CALORIES_TWO;
+        break
+      case CategoryId.Nut:
+        this.averageCalories = Constants.AVERAGE_CALORIES_THREE;
+        break
+      case CategoryId.Seafood:
+        this.averageCalories = Constants.AVERAGE_CALORIES_FOUR;
+        break
+      case CategoryId.Dessert:
+        this.averageCalories = Constants.AVERAGE_CALORIES_FIVE;
+        break
+    }
+    this.totalCalories = this.averageCalories * Constants.CARD_LIST_SPACE;
+    this.highCalories = this.foodInfo.calories < this.averageCalories;
+  }
+
+  build() {
+    Column() {
+      CardTitle({ title: $r('app.string.diet_record_calorie'), subtitle: $r('app.string.unit_weight') })
+      Row() {
+        Text(this.foodInfo.calories.toString())
+          .fontColor(this.getCalorieColor())
+          .fontSize($r('app.integer.font_size_normal_lg'))
+        Text($r('app.string.calorie_with_kcal_unit', ''))
+          .fontSize($r('app.integer.font_size_normal_md2'))
+          .margin({ bottom: $r('app.integer.margin_normal_sm2') })
+      }
+      .margin({
+        top: $r('app.integer.margin_normal_md3'),
+        bottom: $r('app.integer.margin_normal_md3')
+      })
+      .alignItems(VerticalAlign.Bottom)
+
+      Text(this.highCalories ? $r('app.string.high_calorie_food') : $r('app.string.low_calorie_food'))
+        .fontSize($r('app.integer.font_size_normal_sm'))
+        .fontColor($r('app.color.font_color_normal'))
+
+      Progress({
+        value: this.foodInfo.calories,
+        total: this.totalCalories,
+        style: ProgressStyle.Linear
+      })
+        .style({ strokeWidth: Constants.STROKE_WIDTH })
+        .color(this.getCalorieColor())
+        .margin({ top: $r('app.integer.margin_normal_md4') })
+    }
+    .cardStyle()
+    .id('CaloriesProgress')
+  }
+
+  getCalorieColor() {
+    return this.highCalories ? $r('app.color.high_calorie') : $r('app.color.low_calorie');
+  }
+}

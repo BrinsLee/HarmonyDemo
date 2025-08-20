@@ -1,10 +1,12 @@
 import { AbilityConstant, ConfigurationConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
+import { Data } from '../model/DataModels';
 
 const DOMAIN = 0x0000;
 
 export default class EntryAbility extends UIAbility {
+  getAbilityDataCallback: Function | undefined = undefined;
 
   windowStage: window.WindowStage | undefined = undefined;
   /**
@@ -15,6 +17,10 @@ export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     this.context.getApplicationContext().setColorMode(ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET);
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onCreate');
+    this.context.eventHub.on('getAbilityData', this.getAbilityDataCallback = (data: Data) => {
+      data.context = this.context;
+      data.launchWant = want;
+    })
   }
 
   /**

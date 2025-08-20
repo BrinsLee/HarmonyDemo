@@ -2,6 +2,7 @@
   "module": {
     "name": "entry",
     "type": "entry",
+    "srcEntry": "./ets/myabilitystage/MyAbilityStage.ets",
     "description": "$string:module_desc",
     "mainElement": "EntryAbility",
     "deviceTypes": [
@@ -46,6 +47,17 @@
         "label": "$string:FoodMainAbility_label",
         "startWindowIcon": "$media:startIcon",
         "startWindowBackground": "$color:start_window_background"
+      },
+      {
+        "name": "MultitonAbility",
+        "srcEntry": "./ets/multitonability/MultitonAbility.ets",
+        "description": "$string:multitonAbility_desc",
+        "icon": "$media:layered_image",
+        "label": "$string:multitonAbility_label",
+        "startWindowIcon": "$media:startIcon",
+        "startWindowBackground": "$color:white",
+        "exported": true,
+        "launchType": "multiton"
       }
     ],
     "extensionAbilities": [

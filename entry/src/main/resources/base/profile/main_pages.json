@@ -5,6 +5,8 @@
     "pages/statev1/propV1",
     "pages/customcomponent/customComponent",
     "pages/customcomponent/componentExtend",
-    "pages/PageTaskList"
+    "pages/PageTaskList",
+    "pages/FoodMain",
+    "pages/FoodDetail"
   ]
 }

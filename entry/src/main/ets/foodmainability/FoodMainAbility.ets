@@ -2,13 +2,11 @@ import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import Logger from '../utils/Logger';
+import { Data } from '../model/DataModels';
 
 const TAG = '[Sample_StartMode]';
 
-interface Data {
-  context: Context;
-  launchWant: Want;
-}
+
 
 export default class FoodMainAbility extends UIAbility {
   getAbilityDataCallback: Function | undefined = undefined;

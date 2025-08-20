@@ -56,7 +56,7 @@ struct FoodMain {
       }
     }.width(Constants.FULL_PERCENT)
     .height(Constants.FULL_PERCENT)
-    .backgroundColor($r('app.color.back_ground_color'))
+    .backgroundColor($r('app.color.tab_bar_select_color'))
   }
 }
 

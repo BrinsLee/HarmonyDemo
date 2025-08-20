@@ -1,5 +1,7 @@
 import { url } from '@kit.ArkTS';
 import { common, Want } from '@kit.AbilityKit';
+import Logger from '../utils/Logger';
+import { startMode } from '../utils/Util';
 
 @Entry
 @Component
@@ -65,17 +67,7 @@ struct Index {
 
         Button('启动页面Singleton')
           .onClick(()=>{
-            let context: common.UIAbilityContext =
-              this.getUIContext().getHostContext() as common.UIAbilityContext;
-            let want: Want = {
-              bundleName: 'com.example.myapplication',
-              abilityName: 'SingletonAbility',
-              parameters: {
-                name: 'Singleton'
-              }
-            }
-
-            context.startAbility(want, (err) => {})
+            startMode({}, 'FoodMainAbility')
           })
           .width(200)
 

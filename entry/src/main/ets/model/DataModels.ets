@@ -12,6 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Want } from "@kit.AbilityKit"
 
 export enum CategoryId {
   Fruit = 0,
@@ -32,4 +33,9 @@ export class FoodInfo{
   fat: number = 0
   carbohydrates: number = 0
   vitaminC: number = 0
+}
+
+export interface Data {
+  context: Context;
+  launchWant: Want;
 }
