@@ -2,6 +2,7 @@ import { url } from '@kit.ArkTS';
 import { common, Want } from '@kit.AbilityKit';
 import Logger from '../utils/Logger';
 import { startMode } from '../utils/Util';
+import Constants from '../common/Constants';
 
 @Entry
 @Component
@@ -39,7 +40,7 @@ struct Index {
   }
 
   build() {
-    RelativeContainer() {
+    Scroll() {
       Column({space:10}){
         Button('@Prop')
           .onClick(()=>{
@@ -71,11 +72,17 @@ struct Index {
           })
           .width(200)
 
+        Button('启动相机')
+          .onClick(()=>{
+            startMode({}, 'CameraAbility')
+          })
+          .width(200)
+
       }.width('100%')
       .alignItems(HorizontalAlign.Center)
 
     }
-    .height('100%')
-    .width('100%')
+    .height(Constants.FULL_PERCENT)
+    .width(Constants.FULL_PERCENT)
   }
 }

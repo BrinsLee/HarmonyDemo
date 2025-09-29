@@ -235,6 +235,10 @@
     {
       "name": "totast",
       "value": "The Ability instance already exists"
+    },
+    {
+      "name": "capture",
+      "value": "Photo"
     }
   ]
 }

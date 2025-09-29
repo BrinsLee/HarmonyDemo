@@ -7,6 +7,7 @@
     "pages/customcomponent/componentExtend",
     "pages/PageTaskList",
     "pages/FoodMain",
-    "pages/FoodDetail"
+    "pages/FoodDetail",
+    "pages/CameraPage"
   ]
 }
