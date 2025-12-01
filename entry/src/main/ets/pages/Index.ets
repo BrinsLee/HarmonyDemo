@@ -101,6 +101,12 @@ struct Index {
           })
           .width(200)
 
+        Button('知乎')
+          .onClick(()=>{
+            this.getUIContext().getRouter().pushUrl({url: 'pages/comment/ZhihuComment'})
+          })
+          .width(200)
+
       }.width('100%')
       .alignItems(HorizontalAlign.Center)
 

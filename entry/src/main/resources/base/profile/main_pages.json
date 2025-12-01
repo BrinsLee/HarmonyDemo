@@ -10,6 +10,7 @@
     "pages/FoodDetail",
     "pages/CameraPage",
     "pages/ComplexState",
-    "pages/RenderPage"
+    "pages/RenderPage",
+    "pages/comment/ZhihuComment"
   ]
 }
