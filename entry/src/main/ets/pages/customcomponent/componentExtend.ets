@@ -103,5 +103,20 @@ struct PrivateBuilder {
 }
 
 class Tmp {
-  paramA1: string = '';
+   paramA1: string = '';
+}
+
+
+interface GeneratedTypeLiteralInterface_1 {
+  username: string;
+}
+
+// 全局自定义构建函数 按引用传参
+@Builder
+function GlobalBuilder(user: GeneratedTypeLiteralInterface_1 ) {
+  Column() {
+    Text(`Hello ${user.username}`)
+      .fontSize(40)
+      .margin(20)
+  }
 }

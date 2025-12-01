@@ -8,6 +8,8 @@
     "pages/PageTaskList",
     "pages/FoodMain",
     "pages/FoodDetail",
-    "pages/CameraPage"
+    "pages/CameraPage",
+    "pages/ComplexState",
+    "pages/RenderPage"
   ]
 }
