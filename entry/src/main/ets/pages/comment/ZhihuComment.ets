@@ -159,6 +159,9 @@ struct NavComp {
       .borderRadius(12)
       .justifyContent(FlexAlign.Center)
       .margin({ left: 16 })
+      .onClick(() => {
+        this.getUIContext().getRouter().back()
+      })
 
       Text('评论回复')
         .layoutWeight(1)

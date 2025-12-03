@@ -2,7 +2,7 @@
   "src": [
     "pages/Index",
     "pages/Single",
-    "pages/statev1/propV1",
+    "pages/statev1/PropPage",
     "pages/customcomponent/customComponent",
     "pages/customcomponent/componentExtend",
     "pages/PageTaskList",
@@ -11,6 +11,10 @@
     "pages/CameraPage",
     "pages/ComplexState",
     "pages/RenderPage",
-    "pages/comment/ZhihuComment"
+    "pages/comment/ZhihuComment",
+    "pages/statev1/LinkPage",
+    "pages/statev1/ProvideConsume",
+    "pages/statev1/WatchPage",
+    "pages/statev1/ObservedObjectLinkPage"
   ]
 }

@@ -7,6 +7,7 @@
 
 @Component
 struct DateComponent {
+  // @Prop 装饰的变量可以和父组件建立单向同步关系，但是子组件改变引起的变化不会同步回其父组件
   @Prop selectedDate: Date = new Date('');
 
   build() {

@@ -9,6 +9,7 @@
  * @Builder装饰的函数称为 自定义构建函数
  * 严格禁止在其内部定义状态变量或使用生命周期函数
  */
+@Entry
 @Component
 struct BuilderDemo {
   @Builder
@@ -21,7 +22,7 @@ struct BuilderDemo {
   // 参数默认按值传递，状态变量的改变不会引发ui刷新，推荐使用按引用传递
   @Builder
   showTextValueBuilder(params: string) {
-    Text(params)
+    Text(`值传递，不会更新UI ${params}`)
       .fontSize(30)
       .fontWeight(FontWeight.Bold)
   }
@@ -50,11 +51,13 @@ struct BuilderDemo {
         // 单击Click me后，UI文本从Hello更改为ArkUI。
         this.label = 'ArkUI';
       })
+      PanelComp({title: '标题', more: '更多'}) {
+        Text('传入UI底部')
+      }
     }
   }
 }
 
-@Entry
 @Component
 struct PrivateBuilder {
   @State builder_value: string = 'Hello';
@@ -118,5 +121,48 @@ function GlobalBuilder(user: GeneratedTypeLiteralInterface_1 ) {
     Text(`Hello ${user.username}`)
       .fontSize(40)
       .margin(20)
+  }
+}
+
+
+// @BuildParam 该装饰器用于声明任意UI描述的一个元素，类似 slot 占位符
+
+@Component
+struct PanelComp {
+  title?: string
+  more?: string
+
+  @BuilderParam
+  panelContent: () => void = this.DefaultPanelContent
+
+  // 默认显示内容
+  @Builder
+  DefaultPanelContent () {
+    Text('默认内容')
+  }
+
+  build() {
+    Column() {
+      Row() {
+        Text(this.title)
+          .layoutWeight(1)
+          .fontWeight(600)
+
+        Row() {
+          Text(this.more)
+            .fontSize(14)
+            .fontColor('#666666')
+          Image($r('app.media.app_back_black_right_one'))
+            .width(6)
+
+        }
+      }.padding(10)
+
+      Row() {
+        this.panelContent()
+      }.height(100)
+    }
+    .borderRadius(12)
+    .backgroundColor('#fff')
   }
 }
